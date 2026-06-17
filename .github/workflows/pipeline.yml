@@ -8,59 +8,56 @@ on:
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
 
-steps:
-  - uses: actions/checkout@v4
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 23
 
-  - name: Set up Java
-    uses: actions/setup-java@v4
-    with:
-      distribution: temurin
-      java-version: 23
+      - name: Build
+        run: ./mvnw clean package
 
-  - name: Build
-    run: ./mvnw clean package
+      - name: Test
+        run: ./mvnw test -Dspring.profiles.active=test
 
-  - name: Test
-    run: ./mvnw test -Dspring.profiles.active=test
+  deploy:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
 
-deploy:
-needs: build-and-test
-runs-on: ubuntu-latest
+      - name: Run Ansible Playbook
+        uses: dawidd6/action-ansible-playbook@v2
+        with:
+          playbook: deploy.yml
+          inventory: hosts
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          known_hosts: unnecessary
 
-steps:
-  - uses: actions/checkout@v4
+  notify-failure:
+    needs: [build-and-test, deploy]
+    if: failure()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send email on failure
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          secure: true
+          username: ${{ secrets.MAIL_USERNAME }}
+          password: ${{ secrets.MAIL_PASSWORD }}
+          subject: Build Failed
+          to: srengty@gmail.com,${{ github.event.pusher.email }}
+          from: ${{ secrets.MAIL_USERNAME }}
+          body: |
+            Build failed.
 
-  - name: Run Ansible Playbook
-    uses: dawidd6/action-ansible-playbook@v2
-    with:
-      playbook: deploy.yml
-      inventory: hosts
-      key: ${{ secrets.SSH_PRIVATE_KEY }}
-      known_hosts: unnecessary
+            Repository: ${{ github.repository }}
+            Commit: ${{ github.sha }}
 
-notify-failure:
-needs: [build-and-test, deploy]
-if: failure()
-runs-on: ubuntu-latest
-
-steps:
-  - name: Send email on failure
-    uses: dawidd6/action-send-mail@v3
-    with:
-      server_address: smtp.gmail.com
-      server_port: 465
-      secure: true
-      username: ${{ secrets.MAIL_USERNAME }}
-      password: ${{ secrets.MAIL_PASSWORD }}
-      subject: Build Failed
-      to: srengty@gmail.com,${{ github.event.pusher.email }}
-      from: ${{ secrets.MAIL_USERNAME }}
-      body: |
-        Build failed.
-
-        Repository: ${{ github.repository }}
-        Commit: ${{ github.sha }}
-
-        Logs:
-        ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+            Logs:
+            ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
