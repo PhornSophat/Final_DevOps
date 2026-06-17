@@ -24,13 +24,20 @@ public class RegistrationNumberService {
         if (code.isBlank()) {
             code = "GEN";
         }
+        
         String prefix = Year.now().getValue() + "-" + code + "-";
-        long next = profileRepository.countByDepartmentIgnoreCaseAndRegistrationNumberStartingWith(department, prefix) + 1;
+        
+        // Use the new repository method name we created
+        long count = profileRepository.countByDepartmentAndRegistrationNumberPrefix(normalizedDepartment, prefix);
+        
+        int next = (int) (count + 1);
         String candidate = prefix + String.format("%03d", next);
+        
         while (profileRepository.existsByRegistrationNumber(candidate)) {
             next++;
             candidate = prefix + String.format("%03d", next);
         }
+        
         return candidate;
     }
 }

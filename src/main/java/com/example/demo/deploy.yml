@@ -1,0 +1,27 @@
+---
+- name: Deploy and Test Application
+  hosts: web_server
+  tasks:
+    - name: Ensure no local changes in git
+      command: git reset --hard
+      args:
+        chdir: /home/sophat-phorn/Downloads/demo/demo
+
+    - name: Pull latest code
+      git:
+        repo: 'your_repo_url'
+        dest: /home/sophat-phorn/Downloads/demo/demo
+        version: main
+
+    - name: Build using Maven
+      command: ./mvnw clean package
+      args:
+        chdir: /home/sophat-phorn/Downloads/demo/demo
+
+    - name: Run test using SQLite
+      command: ./mvnw test -Dspring.profiles.active=test
+      args:
+        chdir: /home/sophat-phorn/Downloads/demo/demo
+
+    - name: Backup the database (MySQL)
+      shell: mysqldump -u root -p'YourPassword' B-PHORN_Sophath-db > /backups/backup.sql
