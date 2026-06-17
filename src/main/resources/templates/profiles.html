@@ -6,32 +6,84 @@
     <title>ID Card Profiles</title>
     <style>
         body { font-family: Arial, sans-serif; margin: 32px; color: #111827; }
+        .shell { max-width: 1180px; }
+        form { display: grid; grid-template-columns: repeat(4, minmax(160px, 1fr)); gap: 14px; margin: 24px 0 32px; padding: 18px; border: 1px solid #d1d5db; border-radius: 8px; background: #f9fafb; }
+        label { display: grid; gap: 6px; font-weight: 700; font-size: 14px; }
+        input, select { min-height: 38px; padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 6px; font: inherit; background: white; }
+        button { align-self: end; min-height: 38px; border: 0; border-radius: 6px; background: #1d4ed8; color: white; font-weight: 700; cursor: pointer; }
         table { border-collapse: collapse; width: 100%; }
         th, td { border-bottom: 1px solid #d1d5db; padding: 10px; text-align: left; }
         a { color: #1d4ed8; }
+        .empty { padding: 22px 10px; color: #6b7280; text-align: center; }
+        @media (max-width: 900px) { form { grid-template-columns: repeat(2, minmax(150px, 1fr)); } }
+        @media (max-width: 560px) { body { margin: 18px; } form { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
-<h1>ID Card Profiles</h1>
-<table>
-    <thead>
-    <tr>
-        <th>Name</th>
-        <th>Registration</th>
-        <th>Type</th>
-        <th>Department</th>
-        <th>Preview</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:each="profile : ${profiles}">
-        <td th:text="${profile.fullName}">Name</td>
-        <td th:text="${profile.registrationNumber}">REG</td>
-        <td th:text="${profile.type}">USER</td>
-        <td th:text="${profile.department}">Dept</td>
-        <td><a th:href="@{/profiles/{id}/preview(id=${profile.id})}">Open</a></td>
-    </tr>
-    </tbody>
-</table>
+<main class="shell">
+    <h1>ID Card Profiles</h1>
+
+    <form th:action="@{/profiles}" method="post" enctype="multipart/form-data">
+        <label>
+            Full name
+            <input name="fullName" required placeholder="Sophea Chan">
+        </label>
+        <label>
+            Type
+            <select name="type" required>
+                <option th:each="type : ${profileTypes}" th:value="${type}" th:text="${type}">STUDENT</option>
+            </select>
+        </label>
+        <label>
+            Department
+            <input name="department" required placeholder="IT">
+        </label>
+        <label>
+            Title
+            <input name="title" placeholder="Year 3 / Developer">
+        </label>
+        <label>
+            Email
+            <input name="email" type="email" placeholder="name@example.com">
+        </label>
+        <label>
+            Phone
+            <input name="phone" placeholder="012345678">
+        </label>
+        <label>
+            Blood group
+            <input name="bloodGroup" placeholder="O+">
+        </label>
+        <label>
+            Photo
+            <input name="photo" type="file" accept="image/png,image/jpeg">
+        </label>
+        <button type="submit">Create Profile</button>
+    </form>
+
+    <table>
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Registration</th>
+            <th>Type</th>
+            <th>Department</th>
+            <th>Preview</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:if="${#lists.isEmpty(profiles)}">
+            <td class="empty" colspan="5">No profiles yet. Add one above.</td>
+        </tr>
+        <tr th:each="profile : ${profiles}">
+            <td th:text="${profile.fullName}">Name</td>
+            <td th:text="${profile.registrationNumber}">REG</td>
+            <td th:text="${profile.type}">USER</td>
+            <td th:text="${profile.department}">Dept</td>
+            <td><a th:href="@{/profiles/{id}/preview(id=${profile.id})}">Open</a></td>
+        </tr>
+        </tbody>
+    </table>
+</main>
 </body>
 </html>

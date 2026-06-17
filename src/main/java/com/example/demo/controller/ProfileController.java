@@ -49,7 +49,15 @@ public class ProfileController {
     @GetMapping("/")
     public String home(Model model) {
         model.addAttribute("profiles", profileService.list(null, null));
+        model.addAttribute("profileTypes", ProfileType.values());
         return "profiles";
+    }
+
+    @PostMapping(value = "/profiles", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public String createFromForm(@ModelAttribute Profile profile,
+                                 @RequestParam(required = false) MultipartFile photo) {
+        profileService.create(profile, null, photo);
+        return "redirect:/";
     }
 
     @GetMapping("/profiles/{id}/preview")
