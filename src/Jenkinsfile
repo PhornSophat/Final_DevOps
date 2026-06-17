@@ -17,11 +17,12 @@ pipeline {
         stage('Deploy') {
             steps {
                 echo 'Deploying...'
-                dir('src') {
-                    // This command will print the file list so we can see what Ansible sees
-                    sh 'ls -la' 
-                    sh 'ansible-playbook -i hosts deploy.yml'
-                }
+                // This will find where your deploy.yml is actually located
+                sh 'find . -name "deploy.yml"' 
+                
+                // Use the path you find from the command above
+                // If it is in the root, remove the dir('src') block:
+                sh 'ansible-playbook -i hosts deploy.yml'
             }
         }
     }
