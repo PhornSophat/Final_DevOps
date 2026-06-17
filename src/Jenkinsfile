@@ -17,8 +17,9 @@ pipeline {
         stage('Deploy') {
             steps {
                 echo 'Deploying...'
-                // Navigate into the 'src' directory, then run the playbook
                 dir('src') {
+                    // This command will print the file list so we can see what Ansible sees
+                    sh 'ls -la' 
                     sh 'ansible-playbook -i hosts deploy.yml'
                 }
             }
