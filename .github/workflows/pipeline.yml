@@ -58,7 +58,7 @@ steps:
       secure: true
       username: ${{ secrets.MAIL_USERNAME }}
       password: ${{ secrets.MAIL_PASSWORD }}
-      subject: "Build Failed"
+      subject: Build Failed
       to: srengty@gmail.com,${{ github.event.pusher.email }}
       from: ${{ secrets.MAIL_USERNAME }}
       body: |
@@ -69,3 +69,4 @@ steps:
 
         Logs:
         ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+```
