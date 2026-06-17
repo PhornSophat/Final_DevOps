@@ -21,11 +21,7 @@ pipeline {
 
         stage('Deploy') {
             steps {
-                echo 'Deploying application...'
-
-                dir('src/main/java/com/example/demo') {
-                    sh 'ansible-playbook -i hosts deploy.yml'
-                }
+                sh 'ansible-playbook -i hosts deploy.yml'
             }
         }
     }
