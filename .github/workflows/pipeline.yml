@@ -9,7 +9,6 @@ jobs:
   build-and-test:
     runs-on: ubuntu-latest
 
-```
 steps:
   - uses: actions/checkout@v4
 
@@ -24,13 +23,11 @@ steps:
 
   - name: Test
     run: ./mvnw test -Dspring.profiles.active=test
-```
 
 deploy:
 needs: build-and-test
 runs-on: ubuntu-latest
 
-```
 steps:
   - uses: actions/checkout@v4
 
@@ -41,14 +38,12 @@ steps:
       inventory: hosts
       key: ${{ secrets.SSH_PRIVATE_KEY }}
       known_hosts: unnecessary
-```
 
 notify-failure:
 needs: [build-and-test, deploy]
 if: failure()
 runs-on: ubuntu-latest
 
-```
 steps:
   - name: Send email on failure
     uses: dawidd6/action-send-mail@v3
@@ -69,4 +64,3 @@ steps:
 
         Logs:
         ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-```
