@@ -15,16 +15,16 @@ pipeline {
             }
         }
         stage('Deploy') {
-            steps {
-                echo 'Deploying...'
-                // This will find where your deploy.yml is actually located
-                sh 'find . -name "deploy.yml"' 
-                
-                // Use the path you find from the command above
-                // If it is in the root, remove the dir('src') block:
+        steps {
+            echo 'Deploying...'
+            // Navigate to the directory where deploy.yml is located
+            dir('src/main/java/com/example/demo') {
+                // Ensure your 'hosts' file is also moved to this directory, 
+                // or provide the correct path to it.
                 sh 'ansible-playbook -i hosts deploy.yml'
             }
         }
+    }
     }
     post {
         failure {
