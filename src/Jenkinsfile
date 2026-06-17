@@ -16,8 +16,11 @@ pipeline {
         }
         stage('Deploy') {
             steps {
-                // Runs the Ansible Playbook you created earlier
-                sh 'ansible-playbook -i hosts deploy.yml'
+                echo 'Deploying...'
+                // Navigate into the 'src' directory, then run the playbook
+                dir('src') {
+                    sh 'ansible-playbook -i hosts deploy.yml'
+                }
             }
         }
     }
