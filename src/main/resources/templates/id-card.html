@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>ID Card Preview</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 32px; background: #f3f4f6; color: #111827; }
+        .card { width: 340px; min-height: 520px; background: white; border: 1px solid #d1d5db; border-radius: 8px; overflow: hidden; box-shadow: 0 12px 30px rgba(0,0,0,.12); }
+        .header { padding: 18px; color: white; text-align: center; font-weight: 700; }
+        .content { padding: 20px; text-align: center; }
+        .photo { width: 120px; height: 140px; object-fit: cover; border: 2px solid #d1d5db; margin-bottom: 12px; }
+        .placeholder { width: 120px; height: 140px; border: 2px solid #d1d5db; margin: 0 auto 12px; display: grid; place-items: center; color: #6b7280; }
+        .name { font-size: 22px; font-weight: 700; margin: 6px 0; }
+        .meta { margin: 4px 0; }
+        .codes { display: flex; align-items: center; justify-content: center; gap: 12px; margin-top: 16px; }
+        .codes img:first-child { width: 88px; height: 88px; }
+        .codes img:last-child { width: 160px; height: 45px; }
+    </style>
+</head>
+<body>
+<article class="card">
+    <header class="header" th:style="'background:' + (${profile.template != null} ? ${profile.template.primaryColor} : '#1d4ed8')">
+        <span th:text="${profile.template != null && profile.template.organizationName != null ? profile.template.organizationName : 'ID Card'}">ID Card</span>
+    </header>
+    <section class="content">
+        <img class="photo" th:if="${profile.hasPhoto()}" th:src="@{/photos/{file}(file=${profile.photoFileName})}" alt="Profile photo">
+        <div class="placeholder" th:unless="${profile.hasPhoto()}">Photo</div>
+        <div class="name" th:text="${profile.fullName}">Full Name</div>
+        <p class="meta" th:text="${profile.type + ' / ' + profile.title}">Type / Title</p>
+        <p class="meta" th:text="${profile.registrationNumber}">Registration</p>
+        <p class="meta" th:text="${profile.department}">Department</p>
+        <p class="meta" th:text="${profile.email}">email@example.com</p>
+        <div class="codes">
+            <img th:src="@{/api/profiles/{id}/qr(id=${profile.id})}" alt="QR code">
+            <img th:src="@{/api/profiles/{id}/barcode(id=${profile.id})}" alt="Barcode">
+        </div>
+        <p class="meta" th:text="${verificationUrl}">Verification URL</p>
+    </section>
+</article>
+</body>
+</html>

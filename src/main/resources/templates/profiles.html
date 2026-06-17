@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>ID Card Profiles</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 32px; color: #111827; }
+        table { border-collapse: collapse; width: 100%; }
+        th, td { border-bottom: 1px solid #d1d5db; padding: 10px; text-align: left; }
+        a { color: #1d4ed8; }
+    </style>
+</head>
+<body>
+<h1>ID Card Profiles</h1>
+<table>
+    <thead>
+    <tr>
+        <th>Name</th>
+        <th>Registration</th>
+        <th>Type</th>
+        <th>Department</th>
+        <th>Preview</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="profile : ${profiles}">
+        <td th:text="${profile.fullName}">Name</td>
+        <td th:text="${profile.registrationNumber}">REG</td>
+        <td th:text="${profile.type}">USER</td>
+        <td th:text="${profile.department}">Dept</td>
+        <td><a th:href="@{/profiles/{id}/preview(id=${profile.id})}">Open</a></td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>
