@@ -1,0 +1,31 @@
+pipeline {
+    agent any
+    triggers {
+        pollSCM('*/5 * * * *') // Poll Git every 5 minutes
+    }
+    stages {
+        stage('Build') {
+            steps {
+                sh './mvnw clean package'
+            }
+        }
+        stage('Test') {
+            steps {
+                sh './mvnw test -Dspring.profiles.active=test'
+            }
+        }
+        stage('Deploy') {
+            steps {
+                // Runs the Ansible Playbook you created earlier
+                sh 'ansible-playbook -i hosts deploy.yml'
+            }
+        }
+    }
+    post {
+        failure {
+            mail to: 'srengty@gmail.com',
+                 subject: "Build Failed: ${env.JOB_NAME}",
+                 body: "Build failed at ${env.BUILD_URL}. Please check the logs."
+        }
+    }
+}
